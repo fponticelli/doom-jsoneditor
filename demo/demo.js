@@ -2066,6 +2066,7 @@ doom_jsoneditor_JSONEditor.prototype = $extend(doom_Component.prototype,{
 			this.element.innerHTML = "";
 			this.options = this.state.options;
 			this.editor = new JSONEditor(this.element,thx_Objects.combine(this.options,{ startval : null != this.state.value?this.state.value:null}));
+			if(null != this.api.mount) this.api.mount(this.editor);
 		} else if(!thx_Dynamics.equals(current,this.state.value)) this.editor.setValue(this.state.value);
 	}
 	,didUnmount: function() {

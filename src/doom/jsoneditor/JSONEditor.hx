@@ -29,6 +29,8 @@ class JSONEditor extends doom.Component<JSONEditorApi, JSONEditorState> {
       element.innerHTML = "";
       options = state.options;
       editor = new JE(element, options.merge({startval : null != state.value ? state.value : null}));
+      if(null != api.mount)
+        api.mount(editor);
     } else if(!Dynamics.equals(current, state.value)) {
       // TODO do we need to check if the value changed?
       editor.setValue(state.value);
