@@ -17,8 +17,8 @@ class JSONEditor extends doom.Component<JSONEditorApi, JSONEditorState> {
   override function didMount() {
     options = state.options;
     editor = new JE(element, options.merge({startval : null != state.value ? state.value : null}));
-    if(null != api.onMount)
-      api.onMount(editor);
+    if(null != api.mount)
+      api.mount(editor);
   }
 
   override function didRefresh() {
@@ -46,7 +46,7 @@ class JSONEditor extends doom.Component<JSONEditorApi, JSONEditorState> {
 }
 
 typedef JSONEditorApi = {
-  ?onMount : JE -> Void
+  ?mount : JE -> Void
 }
 
 typedef JSONEditorState = {

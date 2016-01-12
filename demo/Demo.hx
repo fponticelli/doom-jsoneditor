@@ -3,7 +3,7 @@ import doom.jsoneditor.JSONEditor;
 class Demo {
   public static function main() {
     var editor = new JSONEditor({
-      onMount : function(editor) {
+      mount : function(editor) {
         // editor.disable();
       }
     }, {

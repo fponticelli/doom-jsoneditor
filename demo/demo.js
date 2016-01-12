@@ -19,7 +19,7 @@ DateTools.getMonthDays = function(d) {
 var Demo = function() { };
 Demo.__name__ = ["Demo"];
 Demo.main = function() {
-	var editor1 = new doom_jsoneditor_JSONEditor({ onMount : function(editor) {
+	var editor1 = new doom_jsoneditor_JSONEditor({ mount : function(editor) {
 	}},{ options : { schema : Demo.schema}, value : Demo.value});
 	Doom.mount(doom_NodeImpl.ComponentNode(editor1),window.document.getElementById("editor"));
 };
@@ -2057,7 +2057,7 @@ doom_jsoneditor_JSONEditor.prototype = $extend(doom_Component.prototype,{
 	,didMount: function() {
 		this.options = this.state.options;
 		this.editor = new JSONEditor(this.element,thx_Objects.combine(this.options,{ startval : null != this.state.value?this.state.value:null}));
-		if(null != this.api.onMount) this.api.onMount(this.editor);
+		if(null != this.api.mount) this.api.mount(this.editor);
 	}
 	,didRefresh: function() {
 		var current = this.editor.getValue();
