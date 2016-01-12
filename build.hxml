@@ -1,0 +1,8 @@
+-js demo/demo.js
+-cp demo
+-cp src
+-lib doom
+-lib dots
+-lib jsoneditor
+-lib thx.core
+-main Demo
