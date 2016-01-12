@@ -2,13 +2,24 @@ import doom.jsoneditor.JSONEditor;
 
 class Demo {
   public static function main() {
-    var editor = new JSONEditor({}, {
+    var editor = new JSONEditor({
+      onMount : function(editor) {
+        // editor.disable();
+      }
+    }, {
       options : {
         schema : schema
-      }
+      },
+      value : value
     });
     Doom.mount(editor, js.Browser.document.getElementById("editor"));
   }
+
+  static var value = {
+    name : "John Doe",
+    age : 73,
+    gender : "male"
+  };
 
   static var schema = {
     "title": "Person",

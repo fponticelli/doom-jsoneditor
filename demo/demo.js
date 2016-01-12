@@ -19,8 +19,9 @@ DateTools.getMonthDays = function(d) {
 var Demo = function() { };
 Demo.__name__ = ["Demo"];
 Demo.main = function() {
-	var editor = new doom_jsoneditor_JSONEditor({ },{ options : { schema : Demo.schema}});
-	Doom.mount(doom_NodeImpl.ComponentNode(editor),window.document.getElementById("editor"));
+	var editor1 = new doom_jsoneditor_JSONEditor({ onMount : function(editor) {
+	}},{ options : { schema : Demo.schema}, value : Demo.value});
+	Doom.mount(doom_NodeImpl.ComponentNode(editor1),window.document.getElementById("editor"));
 };
 var doom_IComponent = function() { };
 doom_IComponent.__name__ = ["doom","IComponent"];
@@ -2053,17 +2054,12 @@ doom_jsoneditor_JSONEditor.prototype = $extend(doom_Component.prototype,{
 		if(__map_reserved["class"] != null) _g.setReserved("class",value); else _g.h["class"] = value;
 		return doom__$Node_Node_$Impl_$.el("div",_g,null,null);
 	}
-	,validate: function(valueToValidate) {
-		if(null == this.editor) return []; else return this.editor.validate(valueToValidate);
-	}
 	,didMount: function() {
 		this.options = this.state.options;
 		this.editor = new JSONEditor(this.element,thx_Objects.combine(this.options,{ startval : null != this.state.value?this.state.value:null}));
-		this.attach();
 		if(null != this.api.onMount) this.api.onMount(this.editor);
 	}
 	,didRefresh: function() {
-		this.detach();
 		var current = this.editor.getValue();
 		if(!thx_Dynamics.equals(this.options,this.state.options)) {
 			this.editor.destroy();
@@ -2071,21 +2067,13 @@ doom_jsoneditor_JSONEditor.prototype = $extend(doom_Component.prototype,{
 			this.options = this.state.options;
 			this.editor = new JSONEditor(this.element,thx_Objects.combine(this.options,{ startval : null != this.state.value?this.state.value:null}));
 		} else if(!thx_Dynamics.equals(current,this.state.value)) this.editor.setValue(this.state.value);
-		this.attach();
 	}
 	,didUnmount: function() {
-		this.detach();
 		this.editor.destroy();
 	}
 	,migrate: function(old) {
 		this.editor = old.editor;
 		this.options = old.options;
-		old.detach();
-		this.attach();
-	}
-	,attach: function() {
-	}
-	,detach: function() {
 	}
 	,__class__: doom_jsoneditor_JSONEditor
 });
@@ -7727,6 +7715,7 @@ if(typeof(scope.performance.now) == "undefined") {
 	}(this));
 }
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
+Demo.value = { name : "John Doe", age : 73, gender : "male"};
 Demo.schema = { 'title' : "Person", 'type' : "object", 'properties' : { 'name' : { 'type' : "string", 'description' : "First and Last name", 'minLength' : 4, 'default' : "Jeremy Dorn"}, 'age' : { 'type' : "integer", 'default' : 25, 'minimum' : 18, 'maximum' : 99}, 'favorite_color' : { 'type' : "string", 'format' : "color", 'title' : "favorite color", 'default' : "#ffa500"}, 'gender' : { 'type' : "string", 'enum' : ["male","female"]}, 'location' : { 'type' : "object", 'title' : "Location", 'properties' : { 'city' : { 'type' : "string", 'default' : "San Francisco"}, 'state' : { 'type' : "string", 'default' : "CA"}, 'citystate' : { 'type' : "string", 'description' : "This is generated automatically from the previous two fields", 'template' : "{{city}}, {{state}}", 'watch' : { 'city' : "location.city", 'state' : "location.state"}}}}, 'pets' : { 'type' : "array", 'format' : "table", 'title' : "Pets", 'uniqueItems' : true, 'items' : { 'type' : "object", 'title' : "Pet", 'properties' : { 'type' : { 'type' : "string", 'enum' : ["cat","dog","bird","reptile","other"], 'default' : "dog"}, 'name' : { 'type' : "string"}}}, 'default' : [{ 'type' : "dog", 'name' : "Walter"}]}}};
 Doom.namespaces = (function($this) {
 	var $r;
