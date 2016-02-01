@@ -2166,12 +2166,12 @@ doom_jsoneditor_JSONEditor.prototype = $extend(Doom.prototype,{
 			var name = _g1[_g];
 			++_g;
 			var fapi = [Reflect.field(this.api,name)];
+			if(null == fapi[0]) continue;
 			var f = (function(fapi1) {
 				return function() {
 					fapi1[0](_g2.editor);
 				};
 			})(fapi);
-			if(null == f) continue;
 			var _this = this.events;
 			if(__map_reserved[name] != null) _this.setReserved(name,f); else _this.h[name] = f;
 			this.editor.on(name,f);

@@ -39,9 +39,9 @@ class JSONEditor extends Doom {
   function setupEvents() {
     events = new Map();
     for(name in eventNames) {
-      var fapi = Reflect.field(api, name),
-          f = function() fapi(editor);
-      if(null == f) continue;
+      var fapi = Reflect.field(api, name);
+      if(null == fapi) continue;
+      var f = function() fapi(editor);
       events.set(name, f);
       editor.on(name, f);
     }
