@@ -2151,11 +2151,15 @@ doom_jsoneditor_JSONEditor.prototype = $extend(Doom.prototype,{
 		if(__map_reserved["class"] != null) _g.setReserved("class",value); else _g.h["class"] = value;
 		return doom__$Node_Node_$Impl_$.el("div",_g,null,null);
 	}
-	,didMount: function() {
-		this._options = this.state.options;
-		this.editor = new JSONEditor(this.element,thx_Objects.combine(this._options,{ startval : null != this.state.value?this.state.value:null}));
+	,onReady: function() {
+		this.editor.setValue(this.state.value);
 		this.setupEvents();
 		if(null != this.api.mount) this.api.mount(this.editor);
+	}
+	,didMount: function() {
+		this._options = this.state.options;
+		this.editor = new JSONEditor(this.element,thx_Objects.combine(this._options,{ startval : null}));
+		this.editor.on("ready",$bind(this,this.onReady));
 	}
 	,setupEvents: function() {
 		var _g2 = this;
@@ -2189,7 +2193,7 @@ doom_jsoneditor_JSONEditor.prototype = $extend(Doom.prototype,{
 		}
 	}
 	,didRefresh: function() {
-		if(null == this.editor) return;
+		if(null == this.editor || !this.editor.ready) return;
 		var current = this.editor.getValue();
 		if(!thx_Dynamics.equals(this._options,this.state.options)) {
 			this.editor.destroy();
@@ -2211,8 +2215,10 @@ doom_jsoneditor_JSONEditor.prototype = $extend(Doom.prototype,{
 		old.clearEvents();
 		this.editor = old.editor;
 		this._options = old.state.options;
-		this.editor.setValue(this.state.value);
-		this.setupEvents();
+		if(this.editor.ready) {
+			this.editor.setValue(this.state.value);
+			this.setupEvents();
+		}
 	}
 	,api: null
 	,state: null

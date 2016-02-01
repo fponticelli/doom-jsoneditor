@@ -28,12 +28,17 @@ class JSONEditor extends Doom {
     return div(["class" => "doom-jsoneditor"]);
   }
 
-  override function didMount() {
-    _options = options;
-    editor = new JE(element, _options.merge({startval : null != state.value ? state.value : null}));
+  function onReady() {
+    editor.setValue(state.value);
     setupEvents();
     if(null != api.mount)
       api.mount(editor);
+  }
+
+  override function didMount() {
+    _options = options;
+    editor = new JE(element, _options.merge({startval : (null : {})}));
+    editor.on("ready", onReady);
   }
 
   function setupEvents() {
@@ -56,7 +61,7 @@ class JSONEditor extends Doom {
   }
 
   override function didRefresh() {
-    if(null == editor) return;
+    if(null == editor || !editor.ready) return;
     var current = editor.getValue();
     if(!Dynamics.equals(_options, options)) {
       // if options have changed rebuild everything
@@ -84,7 +89,9 @@ class JSONEditor extends Doom {
     old.clearEvents();
     editor = old.editor;
     _options = old.options;
-    editor.setValue(state.value);
-    setupEvents();
+    if(editor.ready) {
+      editor.setValue(state.value);
+      setupEvents();
+    }
   }
 }
