@@ -21,6 +21,7 @@ class JSONEditor extends Doom {
 
   var editor : JE;
   var _options : JEBaseOptions;
+  var _isDestroyed : Bool = false;
 
   var events : Map<String, Void -> Void>;
 
@@ -29,6 +30,7 @@ class JSONEditor extends Doom {
   }
 
   function onReady() {
+    if(_isDestroyed) return;
     editor.setValue(state.value);
     setupEvents();
     if(null != api.mount)
@@ -61,7 +63,7 @@ class JSONEditor extends Doom {
   }
 
   override function didRefresh() {
-    if(null == editor || !editor.ready) return;
+    if(null == editor || !editor.ready || _isDestroyed) return;
     var current = editor.getValue();
     if(!Dynamics.equals(_options, options)) {
       // if options have changed rebuild everything
@@ -80,12 +82,13 @@ class JSONEditor extends Doom {
   }
 
   override function didUnmount() {
+    _isDestroyed = true;
     clearEvents();
     editor.destroy();
   }
 
   function migrate(old : JSONEditor) {
-    if(null == old.editor) return;
+    if(null == old.editor || _isDestroyed) return;
     old.clearEvents();
     editor = old.editor;
     _options = old.options;

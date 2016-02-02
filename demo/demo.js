@@ -2129,6 +2129,7 @@ doom_XmlNode.attributesToString = function(attributes) {
 	return buf;
 };
 var doom_jsoneditor_JSONEditor = function(api,state) {
+	this._isDestroyed = false;
 	this.api = api;
 	this.state = state;
 	Doom.call(this,null);
@@ -2144,6 +2145,7 @@ doom_jsoneditor_JSONEditor.__super__ = Doom;
 doom_jsoneditor_JSONEditor.prototype = $extend(Doom.prototype,{
 	editor: null
 	,_options: null
+	,_isDestroyed: null
 	,events: null
 	,render: function() {
 		var _g = new haxe_ds_StringMap();
@@ -2152,6 +2154,7 @@ doom_jsoneditor_JSONEditor.prototype = $extend(Doom.prototype,{
 		return doom__$Node_Node_$Impl_$.el("div",_g,null,null);
 	}
 	,onReady: function() {
+		if(this._isDestroyed) return;
 		this.editor.setValue(this.state.value);
 		this.setupEvents();
 		if(null != this.api.mount) this.api.mount(this.editor);
@@ -2193,7 +2196,7 @@ doom_jsoneditor_JSONEditor.prototype = $extend(Doom.prototype,{
 		}
 	}
 	,didRefresh: function() {
-		if(null == this.editor || !this.editor.ready) return;
+		if(null == this.editor || !this.editor.ready || this._isDestroyed) return;
 		var current = this.editor.getValue();
 		if(!thx_Dynamics.equals(this._options,this.state.options)) {
 			this.editor.destroy();
@@ -2207,11 +2210,12 @@ doom_jsoneditor_JSONEditor.prototype = $extend(Doom.prototype,{
 		}
 	}
 	,didUnmount: function() {
+		this._isDestroyed = true;
 		this.clearEvents();
 		this.editor.destroy();
 	}
 	,migrate: function(old) {
-		if(null == old.editor) return;
+		if(null == old.editor || this._isDestroyed) return;
 		old.clearEvents();
 		this.editor = old.editor;
 		this._options = old.state.options;
