@@ -84,7 +84,8 @@ class JSONEditor extends Doom {
   override function didUnmount() {
     _isDestroyed = true;
     clearEvents();
-    editor.destroy();
+    if(null != editor)
+      editor.destroy();
   }
 
   function migrate(old : JSONEditor) {
