@@ -55,7 +55,7 @@ class JSONEditor extends Doom {
   }
 
   function clearEvents() {
-    if(null == events)
+    if(null == events || null == editor)
       return;
     for(name in events.keys()) {
       editor.off(name, events.get(name));
