@@ -1,28 +1,16 @@
 package doom.jsoneditor;
 
-import Doom.*;
+import doom.html.Html.*;
 import jsoneditor.JSONEditor as JE;
-import jsoneditor.JSONEditorOptions as JEOptions;
 import jsoneditor.JSONEditorOptions.JSONEditorBaseOptions as JEBaseOptions;
 import thx.Dynamics;
 using thx.Objects;
 
-@:children(none)
-class JSONEditor extends Doom {
+class JSONEditor extends doom.html.Component<JSONEditorProps> {
   static var eventNames = ["change", "ready"];
-
-  @:api(opt) var mount   : jsoneditor.JSONEditor -> Void;
-  @:api(opt) var refresh : jsoneditor.JSONEditor -> Void;
-  @:api(opt) var ready   : jsoneditor.JSONEditor -> Void;
-  @:api(opt) var change  : jsoneditor.JSONEditor -> Void;
-
-  @:state var value : {};
-  @:state var options : jsoneditor.JSONEditorOptions.JSONEditorBaseOptions;
 
   var editor : JE;
   var _options : JEBaseOptions;
-  var _isDestroyed : Bool = false;
-
   var events : Map<String, Void -> Void>;
 
   override function render() {
@@ -30,15 +18,15 @@ class JSONEditor extends Doom {
   }
 
   function onReady() {
-    if(_isDestroyed) return;
-    editor.setValue(state.value);
+    if(isUnmounted) return;
+    editor.setValue(props.value);
     setupEvents();
-    if(null != api.mount)
-      api.mount(editor);
+    if(null != props.mount)
+      props.mount(editor);
   }
 
   override function didMount() {
-    _options = options;
+    _options = props.options;
     editor = new JE(element, _options.merge({startval : (null : {})}));
     editor.on("ready", onReady);
   }
@@ -46,7 +34,7 @@ class JSONEditor extends Doom {
   function setupEvents() {
     events = new Map();
     for(name in eventNames) {
-      var fapi = Reflect.field(api, name);
+      var fapi = Reflect.field(props, name);
       if(null == fapi) continue;
       var f = function() fapi(editor);
       events.set(name, f);
@@ -62,44 +50,39 @@ class JSONEditor extends Doom {
     }
   }
 
-  override function didRefresh() {
-    if(null == editor || !editor.ready || _isDestroyed) return;
+  override function didUpdate() {
+    if(null == editor || !editor.ready || isUnmounted) return;
+    clearEvents();
     var current = editor.getValue();
-    if(!Dynamics.equals(_options, options)) {
+    if(!Dynamics.equals(_options, props.options)) {
       // if options have changed rebuild everything
       editor.destroy();
       element.innerHTML = "";
-      _options = options;
-      editor = new JE(element, _options.merge({startval : null != state.value ? state.value : null}));
+      _options = props.options;
+      editor = new JE(element, _options.merge({startval : null != props.value ? props.value : null}));
       editor.on("ready", onReady);
-      if(null != api.mount)
-        api.mount(editor);
-    } else if(!Dynamics.equals(current, state.value)) {
-      // TODO do we need to check if the value changed?
-      editor.setValue(state.value);
-      if(null != api.refresh)
-        api.refresh(editor);
+      if(null != props.mount)
+        props.mount(editor);
+    } else if(!Dynamics.equals(current, props.value)) {
+      editor.setValue(props.value);
+      if(null != props.refresh)
+        props.refresh(editor);
+      setupEvents();
     }
   }
 
-  override function didUnmount() {
-    _isDestroyed = true;
+  override function willUnmount() {
     clearEvents();
     if(null != editor)
       editor.destroy();
   }
+}
 
-  function migrate(old : JSONEditor) {
-    if(null == old.editor || _isDestroyed) return;
-    if(null != old)
-      old.clearEvents();
-    if(null != old) {
-      editor = old.editor;
-      _options = old.options;
-    }
-    if(null != editor && editor.ready) {
-      editor.setValue(state.value);
-      setupEvents();
-    }
-  }
+typedef JSONEditorProps = {
+  ?mount   : jsoneditor.JSONEditor -> Void,
+  ?refresh : jsoneditor.JSONEditor -> Void,
+  ?ready   : jsoneditor.JSONEditor -> Void,
+  ?change  : jsoneditor.JSONEditor -> Void,
+  ?value   : {},
+  ?options : jsoneditor.JSONEditorOptions.JSONEditorBaseOptions
 }
