@@ -5,14 +5,13 @@ class Demo {
     var editor = new JSONEditor({
       mount : function(editor) {
         // editor.disable();
-      }
-    }, {
+      },
       options : {
         schema : schema
       },
       value : value
     });
-    Doom.mount(editor, js.Browser.document.getElementById("editor"));
+    Doom.browser.mount(editor, js.Browser.document.getElementById("editor"));
   }
 
   static var value = {
