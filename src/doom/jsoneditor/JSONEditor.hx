@@ -31,6 +31,9 @@ class JSONEditor extends doom.html.Component<JSONEditorProps> {
     editor.on("ready", onReady);
   }
 
+  override function shouldRender()
+    return false;
+
   function setupEvents() {
     events = new Map();
     for(name in eventNames) {
